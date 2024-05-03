@@ -40,32 +40,35 @@ if (session) {
 			<a href="/" class="text-2xl font-bold">Acortador de Link</a>
 			<a href="/" class="text-lg">Acortador</a>
 			<a href="/" class="text-lg">Estadisticas</a>
-			<!-- <Icon name="line-md--chevron-down" /> -->
+			
 			<div>
 				<Auth>
 					{
 						session ? (
-							<div id="dropdown-menu" class="flex items-center w-[300px] gap-2 my-4">
-							<div id="dropdown-label">
-
-								<Picture
-									class="w-8 h-8 rounded-full"
-									src={session.user?.image || ""}
-									alt={
-										session.user?.name ||
-										"Error a cargar la imagen"
-									}
-									inferSize
-								/>
-							</div>
-							<div id='dropdown-content'>
-								<span class="text-sm font-semibold hidden md:flex">
-									{session.user?.name}
-								</span>
-								<SignOut class="text-sm font-semibold">
-									Cerrar Sesion
-								</SignOut>
-							</div>
+							<div
+							class="flex items-center w-[100px] cursor-pointer gap-2 my-4 relative group mix-w-[100px]"
+							>
+								<div>
+									<Picture
+										class="w-8 h-8 rounded-full"
+										src={session.user?.image || ""}
+										alt={
+											session.user?.name ||
+											"Error a cargar la imagen"
+										}
+										inferSize
+									/>
+								</div>
+										<Icon name="line-md:chevron-down" />
+								<div class="absolute hidden top-[110%] right-3 group-hover:flex group-focus:flex flex-col bg-slate-800 p-2 rounded-md gap-2 mx-10 w-max">
+									<span class="text-sm font-semibold ">
+										{session.user?.name?.slice(0, 10)}
+									</span>
+									<hr />
+									<SignOut class="text-sm font-semibold">
+										Cerrar Sesion
+									</SignOut>
+								</div>
 							</div>
 						) : (
 							<div class="items-center justify-center my-4 ">
