@@ -5,6 +5,7 @@ const User = defineTable({
     id: column.number({primaryKey: true, unique: true, autoIncrement: true}),
     email: column.text(),
     name: column.text(),
+    userimage: column.text(),
   }
 })
 

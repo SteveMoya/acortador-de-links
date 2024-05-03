@@ -2,13 +2,32 @@
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 import type { Session } from "@auth/core/types";
-
 import { getSession } from "auth-astro/server";
+import { Auth, SignIn, SignOut } from "auth-astro/components";
+import { Picture } from "astro:assets";
+import { like } from "astro:db";
+import { db } from "astro:db";
+import { User } from "astro:db";
+import { Icon } from "astro-icon/components";
 
 const session: Session | null = await getSession(Astro.request);
 
-import { Auth, SignIn, SignOut } from "auth-astro/components";
-import { Picture } from "astro:assets";
+if (session) {
+	if (session.user?.email && session.user?.name && session.user?.image) {
+		const res = await db
+			.select()
+			.from(User)
+			.where(like(User.email, session.user?.email));
+
+		if (res.length === 0) {
+			await db.insert(User).values({
+				email: session.user?.email,
+				name: session.user?.name,
+				userimage: session.user?.image,
+			});
+		}
+	}
+}
 ---
 
 <Layout
@@ -21,23 +40,32 @@ import { Picture } from "astro:assets";
 			<a href="/" class="text-2xl font-bold">Acortador de Link</a>
 			<a href="/" class="text-lg">Acortador</a>
 			<a href="/" class="text-lg">Estadisticas</a>
+			<!-- <Icon name="line-md--chevron-down" /> -->
 			<div>
 				<Auth>
 					{
 						session ? (
-							<div class="flex items-center w-[300px] gap-2 my-4">
+							<div id="dropdown-menu" class="flex items-center w-[300px] gap-2 my-4">
+							<div id="dropdown-label">
+
 								<Picture
 									class="w-8 h-8 rounded-full"
-									src={session.user?.image || ''}
-									alt={session.user?.name || 'Error a cargar la imagen'}
+									src={session.user?.image || ""}
+									alt={
+										session.user?.name ||
+										"Error a cargar la imagen"
+									}
 									inferSize
 								/>
+							</div>
+							<div id='dropdown-content'>
 								<span class="text-sm font-semibold hidden md:flex">
 									{session.user?.name}
 								</span>
 								<SignOut class="text-sm font-semibold">
 									Cerrar Sesion
 								</SignOut>
+							</div>
 							</div>
 						) : (
 							<div class="items-center justify-center my-4 ">
@@ -78,7 +106,12 @@ import { Picture } from "astro:assets";
 	<!-- End Main Content -->
 	<!-- Footer -->
 	<footer class="text-center my-4">
-		<p class="text-sm">Hecho con ❤️ por <a href="https://github.com/SteveMoya" class="text-blue-500">Steve Moya</a></p>
+		<p class="text-sm">
+			Hecho con ❤️ por <a
+				href="https://github.com/SteveMoya"
+				class="text-blue-500">Steve Moya</a
+			>
+		</p>
 	</footer>
 	<!-- End Footer -->
 </Layout>
