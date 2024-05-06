@@ -5,28 +5,25 @@ import type { Session } from "@auth/core/types";
 import { getSession } from "auth-astro/server";
 import { Auth, SignIn, SignOut } from "auth-astro/components";
 import { Picture } from "astro:assets";
-import { like } from "astro:db";
-import { db } from "astro:db";
-import { User } from "astro:db";
 import { Icon } from "astro-icon/components";
+import { ShorterUrl } from "@components/ShorterUrl";
+import { getUserByEmail } from "@utils/db.ts";
 
 const session: Session | null = await getSession(Astro.request);
 
-if (session) {
-	if (session.user?.email && session.user?.name && session.user?.image) {
-		const res = await db
-			.select()
-			.from(User)
-			.where(like(User.email, session.user?.email));
+let userId: number | undefined
+if (
+  session &&
+  session.user?.email
+) {
+  const res = await getUserByEmail(session.user.email)
 
-		if (res.length === 0) {
-			await db.insert(User).values({
-				email: session.user?.email,
-				name: session.user?.name,
-				userimage: session.user?.image,
-			});
-		}
-	}
+  if (
+    res.success &&
+    res.data
+  ) {
+    userId = res.data.id
+  }
 }
 ---
 
@@ -35,19 +32,24 @@ if (session) {
 	description="Esta Aplicacion trata de solucionar el problema de las url super largas acortandolas"
 >
 	<!-- NavBar -->
+
 	<header>
-		<nav class="flex justify-between items-center mt-4">
-			<a href="/" class="text-2xl font-bold">Acortador de Link</a>
-			<a href="/" class="text-lg">Acortador</a>
-			<a href="/" class="text-lg">Estadisticas</a>
-			
-			<div>
-				<Auth>
-					{
-						session ? (
-							<div
-							class="flex items-center w-[100px] cursor-pointer gap-2 my-4 relative group mix-w-[100px]"
-							>
+		<Auth>
+			{
+				session && (
+					<nav class="flex justify-between items-center mt-4">
+						<a href="/" class="text-2xl font-bold">
+							Acortador de Link
+						</a>
+						<a href="/" class="text-lg">
+							Mis Links
+						</a>
+						<a href="/" class="text-lg">
+							Estadisticas
+						</a>
+
+						<div>
+							<div class="flex items-center w-[100px] cursor-pointer gap-2 my-4 relative group mix-w-[100px]">
 								<div>
 									<Picture
 										class="w-8 h-8 rounded-full"
@@ -59,7 +61,7 @@ if (session) {
 										inferSize
 									/>
 								</div>
-										<Icon name="line-md:chevron-down" />
+								<Icon name="line-md:chevron-down" />
 								<div class="absolute hidden top-[110%] right-3 group-hover:flex group-focus:flex flex-col bg-slate-800 p-2 rounded-md gap-2 mx-10 w-max">
 									<span class="text-sm font-semibold ">
 										{session.user?.name?.slice(0, 10)}
@@ -70,41 +72,56 @@ if (session) {
 									</SignOut>
 								</div>
 							</div>
-						) : (
-							<div class="items-center justify-center my-4 ">
-								<SignIn
-									class="social-button github hover:text-[#333]"
-									provider="github"
-								>
-									{" "}
-									Github
-									{/* <Icon
-										name="mdi:github"
-										class="h-6 w-auto"
-									/> */}
-								</SignIn>
-								<SignIn
-									class="social-button google hover:text-[#db4437]"
-									provider="google"
-								>
-									{" "}
-									Google
-									{/* <Icon
-											name="mdi:google"
-											class="h-6 w-auto"
-										/> */}
-								</SignIn>
-							</div>
-						)
-					}
-				</Auth>
-			</div>
-		</nav>
+						</div>
+					</nav>
+				)
+			}
+		</Auth>
 	</header>
 	<!--End NavBar -->
 	<!-- Main Content -->
 	<main class="my-10 mx-auto max-w-screen-xl max-h-screen">
-		<h1 class="text-4xl">Acortador de Link</h1>
+		<h1 class="text-4xl mb-4">Acortador de Link</h1>
+		{
+			session ? (
+				<>
+					<Card
+						title="Bienvenido"
+						body={`Hola ${session.user?.name}!`}
+					/>
+					<ShorterUrl userId={userId || 0} client:load />
+				</>
+			) : (
+				<Card
+					title="Bienvenido"
+					body="Inicia sesion para poder acortar tus links"
+				>
+					<div class="mt-4">
+
+					<Auth>
+						<SignIn
+							class="bg-slate-100 p-2 rounded-full  text-slate-800 hover:text-[#333] "
+							provider="github"
+						>
+							<Icon
+										name="mdi:github"
+										class="h-6 w-auto"
+									/>
+						</SignIn>
+						<SignIn
+							class="bg-slate-100 p-2 rounded-full text-slate-800 hover:text-[#db4437]"
+							provider="google"
+						>
+							<Icon
+											name="mdi:google"
+											class="h-6 w-auto"
+										/>
+						</SignIn>
+					</Auth>
+					</div>
+				</Card>
+			)
+		}
 	</main>
 	<!-- End Main Content -->
 	<!-- Footer -->
