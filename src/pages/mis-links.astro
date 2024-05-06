@@ -1,0 +1,91 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Section from "@components/Section.astro";
+import type { Session } from "@auth/core/types";
+import { getSession } from "auth-astro/server";
+import { Icon } from "astro-icon/components";
+import { getUserByEmail, getUrlsFromUser } from "@utils/db.ts";
+
+const session: Session | null = await getSession(Astro.request);
+if (!session) {
+    return Astro.redirect("/");
+}
+
+let urls: {
+    url: string;
+    shortUrl: string;
+}[] = [];
+
+if (session && session.user?.email) {
+    const user = await getUserByEmail(session.user.email);
+
+    if (user.success && user.data) {
+        const urlsRes = await getUrlsFromUser(user.data?.id);
+
+        if (urlsRes.success && urlsRes.data) {
+            urls = urlsRes.data.map((url) => url);
+        }
+    }
+}
+---
+
+<Layout
+    title="Mis Links"
+    description="Aqui podras ver tus links acortados anteriormente."
+>
+    <!-- Main Content -->
+    <Section
+        title={`URLs acortadas de ${session.user?.name?.split(" ")[0]}`}
+        body={`Hola ${session.user?.name}!`}
+    >
+        <ul class="grid grid-cols-2 md:grid-cols-3 gap-4 px-6">
+            {
+                urls.map((url) => (
+                    <li class="py-2 border my-2 rounded-sm p-4 h-auto max-w-full flex flex-col gap-4 ">
+                        <span>{url.url}</span>
+                        <button
+                            value={url.shortUrl}
+                            class="copy-shortened-url bg-slate-600 py-2 px-2 rounded"
+                        >
+                            <Icon
+                                name="line-md:clipboard-arrow"
+                                class="inline-block ml-1 mb-1"
+                            />
+                            Copiar URL
+                        </button>
+                    </li>
+                ))
+            }
+        </ul>
+    </S>
+
+    <!-- End Main Content -->
+</Layout>
+<script>
+    import { toast } from "sonner";
+
+    const url = window.location.origin;
+
+    const copyShortenedUrl = document.getElementsByClassName(
+        "copy-shortened-url",
+    ) as HTMLCollectionOf<HTMLButtonElement>;
+
+    if (copyShortenedUrl) {
+        for (const button of copyShortenedUrl) {
+            button.onclick = (e) => {
+                // @ts-ignore
+                if (!e.target?.value) return;
+
+                try {
+                    // @ts-ignore
+                    window.navigator.clipboard.writeText(
+                        `${url}/${(e.target as HTMLButtonElement)?.value}`,
+                    );
+                    toast.success("URL copiada al portapapeles!");
+                } catch {
+                    toast.error("No se pudo copiar la URL al portapapeles");
+                }
+            };
+        }
+    }
+</script>

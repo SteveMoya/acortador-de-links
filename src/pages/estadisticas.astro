@@ -1,0 +1,49 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Section from "@components/Section.astro";
+import type { Session } from "@auth/core/types";
+import { getSession } from "auth-astro/server";
+import { Icon } from "astro-icon/components";
+import { getUserByEmail, getCountUrlsFromUser } from "@utils/db.ts";
+
+const session: Session | null = await getSession(Astro.request);
+if (!session) {
+    return Astro.redirect("/");
+}
+let countUrls = 0;
+if (session && session.user?.email) {
+    const user = await getUserByEmail(session.user.email);
+    if (user.success && user.data) {
+        const res = await getCountUrlsFromUser(user.data?.id);
+        if (res.success && res.data) {
+            countUrls = res.data;
+        }
+    }
+}
+---
+
+<Layout
+    title="Mis Links"
+    description="Aqui podras ver tus links acortados anteriormente."
+>
+    <!-- Main Content -->
+    <Section
+        title={`URLs acortadas de ${session.user?.name?.split(" ")[0]}`}
+        body={`Hola ${session.user?.name}!`}
+    >
+        <div class="rounded-lg w-44 bg-slate-700 p-8 mx-auto my-10">
+                <Icon name="line-md:speedometer" class='text-3xl mx-auto' />
+            <div class="my-2">
+                <h2 class="text-4xl font-bold">{countUrls}</h2>
+            </div>
+
+            <div>
+                <p class="mt-2 font-sans text-base font-medium">
+                    Cantidad de Links
+                </p>
+            </div>
+        </div>
+    </Section>
+
+    <!-- End Main Content -->
+</Layout>

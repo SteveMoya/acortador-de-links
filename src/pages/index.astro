@@ -1,29 +1,21 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Card from "../components/Card.astro";
+import Layout from "@layouts/Layout.astro";
+import Section from "@components/Section.astro";
 import type { Session } from "@auth/core/types";
 import { getSession } from "auth-astro/server";
-import { Auth, SignIn, SignOut } from "auth-astro/components";
-import { Picture } from "astro:assets";
+import { Auth, SignIn } from "auth-astro/components";
 import { Icon } from "astro-icon/components";
 import { ShorterUrl } from "@components/ShorterUrl";
 import { getUserByEmail } from "@utils/db.ts";
 
 const session: Session | null = await getSession(Astro.request);
 
-let userId: number | undefined
-if (
-  session &&
-  session.user?.email
-) {
-  const res = await getUserByEmail(session.user.email)
-
-  if (
-    res.success &&
-    res.data
-  ) {
-    userId = res.data.id
-  }
+let userID: number | undefined;
+if (session && session.user?.email) {
+	const res = await getUserByEmail(session.user.email);
+	if (res.success && res.data) {
+		userID = res.data.id;
+	}
 }
 ---
 
@@ -31,107 +23,41 @@ if (
 	title="Acortador de Link"
 	description="Esta Aplicacion trata de solucionar el problema de las url super largas acortandolas"
 >
-	<!-- NavBar -->
 
-	<header>
-		<Auth>
-			{
-				session && (
-					<nav class="flex justify-between items-center mt-4">
-						<a href="/" class="text-2xl font-bold">
-							Acortador de Link
-						</a>
-						<a href="/" class="text-lg">
-							Mis Links
-						</a>
-						<a href="/" class="text-lg">
-							Estadisticas
-						</a>
-
-						<div>
-							<div class="flex items-center w-[100px] cursor-pointer gap-2 my-4 relative group mix-w-[100px]">
-								<div>
-									<Picture
-										class="w-8 h-8 rounded-full"
-										src={session.user?.image || ""}
-										alt={
-											session.user?.name ||
-											"Error a cargar la imagen"
-										}
-										inferSize
-									/>
-								</div>
-								<Icon name="line-md:chevron-down" />
-								<div class="absolute hidden top-[110%] right-3 group-hover:flex group-focus:flex flex-col bg-slate-800 p-2 rounded-md gap-2 mx-10 w-max">
-									<span class="text-sm font-semibold ">
-										{session.user?.name?.slice(0, 10)}
-									</span>
-									<hr />
-									<SignOut class="text-sm font-semibold">
-										Cerrar Sesion
-									</SignOut>
-								</div>
-							</div>
-						</div>
-					</nav>
-				)
-			}
-		</Auth>
-	</header>
-	<!--End NavBar -->
 	<!-- Main Content -->
-	<main class="my-10 mx-auto max-w-screen-xl max-h-screen">
-		<h1 class="text-4xl mb-4">Acortador de Link</h1>
 		{
 			session ? (
 				<>
-					<Card
+					<Section
 						title="Bienvenido"
 						body={`Hola ${session.user?.name}!`}
 					/>
-					<ShorterUrl userId={userId || 0} client:load />
+					<ShorterUrl userID={userID} client:load />
 				</>
 			) : (
-				<Card
+				<Section
 					title="Bienvenido"
-					body="Inicia sesion para poder acortar tus links"
+					body="Por favor!, inicia sesion para poder acortar tus links"
 				>
-					<div class="mt-4">
-
-					<Auth>
-						<SignIn
-							class="bg-slate-100 p-2 rounded-full  text-slate-800 hover:text-[#333] "
-							provider="github"
-						>
-							<Icon
-										name="mdi:github"
-										class="h-6 w-auto"
-									/>
-						</SignIn>
-						<SignIn
-							class="bg-slate-100 p-2 rounded-full text-slate-800 hover:text-[#db4437]"
-							provider="google"
-						>
-							<Icon
-											name="mdi:google"
-											class="h-6 w-auto"
-										/>
-						</SignIn>
-					</Auth>
+					<div class="my-4 ">
+						<Auth>
+							<SignIn
+								class="bg-slate-100 p-2 rounded-full  text-slate-800 hover:text-[#333] "
+								provider="github"
+							>
+								<Icon name="mdi:github" class="h-6 w-auto" />
+							</SignIn>
+							<SignIn
+								class="bg-slate-100 p-2 rounded-full text-slate-800 hover:text-[#db4437]"
+								provider="google"
+							>
+								<Icon name="mdi:google" class="h-6 w-auto" />
+							</SignIn>
+						</Auth>
 					</div>
-				</Card>
+				</Section>
 			)
 		}
-	</main>
 	<!-- End Main Content -->
-	<!-- Footer -->
-	<footer class="text-center my-4">
-		<p class="text-sm">
-			Hecho con ❤️ por <a
-				href="https://github.com/SteveMoya"
-				class="text-blue-500">Steve Moya</a
-			>
-		</p>
-	</footer>
-	<!-- End Footer -->
+	
 </Layout>
