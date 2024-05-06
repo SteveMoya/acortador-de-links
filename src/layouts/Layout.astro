@@ -1,11 +1,16 @@
 ---
 import { Toaster } from "sonner";
+import Header from "./Header.astro";
+import { getSession } from "auth-astro/server";
+import type { Session } from "@auth/core/types";
+import Footer from "./Footer.astro";
 
 interface Props {
 	title: string;
 	description: string;
 }
 const { title, description } = Astro.props;
+const session: Session | null = await getSession(Astro.request);
 ---
 
 <!doctype html>
@@ -18,39 +23,37 @@ const { title, description } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{title}</title>
 	</head>
-	<body>
-		<slot />
-		<Toaster richColors client:only />
+	<body
+		class="text-center text-white font-sans antialiased bg-gradient-to-br from-[#13151a] to-[#1e1f26] min-h-screen"
+	>
+		<Header session={session} />
+		<main class="my-10 mx-auto max-w-screen-xl">
+			<h1 class="text-4xl mb-4">{title}</h1>
+			<slot />
+			<Toaster richColors client:only />
+		</main>
+		<Footer />
 	</body>
 </html>
 <style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
+	body {
+		scrollbar-color: #007fff #222;
 	}
-	html {
-		font-family: system-ui, sans-serif;
-		background: #13151a;
-		background-size: 224px;
-		text-align: center;
-		color: white;
+	/* Todavia lo siguiente seguira hasta que sea en todos los navegadores*/
+	::-webkit-scrollbar {
+		width: 4px;
+		color: #007fff;
+		transition: all 0.4s ease;
 	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
+	::-webkit-scrollbar-thumb {
+		background: #007fff;
+		border-radius: 4px;
+		width: 4px;
+		transition: all 0.4s ease;
+	}
+	::-webkit-scrollbar-track {
+		background: #222;
+		border-radius: 4px;
+		width: 4px;
 	}
 </style>

@@ -1,8 +1,8 @@
 import { validarURL } from "@src/utils/utils"
 import { useRef, useState } from "react"
 import { toast } from "sonner"
-export const ShorterUrl = ({ userId }:
-    { userId: number }
+export const ShorterUrl = ({ userID }:
+    { userID?: number }
 ) => {
     const [url, setUrl] = useState<string>()
     const [error, setError] = useState<string>()
@@ -29,7 +29,7 @@ export const ShorterUrl = ({ userId }:
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url, userId }),
+                body: JSON.stringify({ url, userID }),
             });
             const data = await res.json();
             const shortUrldata = data.shortUrl;
@@ -56,7 +56,7 @@ export const ShorterUrl = ({ userId }:
     }
     const handleCopy = async () => {
         try {
-           await navigator.clipboard.writeText(shortenedUrlRef.current!.value);
+            await navigator.clipboard.writeText(shortenedUrlRef.current!.value);
             toast.success('URL Copiada con éxito')
         }
         catch (err) {
@@ -65,11 +65,9 @@ export const ShorterUrl = ({ userId }:
             setError('Ocurrió un error al copiar la URL, intenta de nuevo más tarde');
             toast.error('Ocurrió un error al copiar la URL, intenta de nuevo más tarde')
         }
-
     }
     return (
         <>
-
             <form onSubmit={handleSubmit} className="flex flex-col max-w-screen-md my-10 mx-auto gap-4">
                 <label className="flex flex-col"> <h3 className="text-3xl ">URL a Acortar</h3>
                     <input type="url" required
@@ -86,10 +84,6 @@ export const ShorterUrl = ({ userId }:
                         className=" p-2 border border-gray-300 rounded-lg text-black"
                     />
                 </label>
-
-
-
-
             </form>
             <div className="flex flex-col max-w-screen-md mx-auto">
                 {shortenedUrlRef.current?.value && (

@@ -1,0 +1,25 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	title: string;
+	body: string;
+}
+
+const { title, body } = Astro.props;
+---
+
+<section
+	class="flex flex-col shadow-lg rounded-lg bg-gradient-to-t from-[#202b7e] to-[#1D2C4C]"
+>
+		<h2
+			class="text-xl my-4"
+		>
+			{title}
+			<Icon name="line-md:arrow-small-down" class="inline-block ml-1" />
+		</h2>
+		<p class="my-2">
+			{body}
+		</p>
+		<slot />
+</section>
