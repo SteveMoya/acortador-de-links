@@ -59,7 +59,8 @@ export const POST: APIRoute = async ({ request }) => {
                 await db.insert(ShortenedUrl).values({
                     userID: body.userID,
                     shortUrl: id,
-                    url: url
+                    url: url,
+                    visits: 0
                 })
             }
         } while (idExists)

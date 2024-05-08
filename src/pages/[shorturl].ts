@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { getLinkUrl } from "@utils/db";
-
+import { ShortenedUrl, db, eq } from "astro:db";
 export const GET: APIRoute = async ({ params, redirect }) => {
   const { shorturl } = params
 
@@ -29,6 +29,13 @@ export const GET: APIRoute = async ({ params, redirect }) => {
             }
         })
   }
+  // aqui contamos las visitas a la url y la enviamos a la db
+  await db.select().from(ShortenedUrl).where(
+    eq(ShortenedUrl.shortUrl, shorturl)
+  ).values({
+    visits: + 1
+  })
+
 
   return redirect(url.data)
 }

@@ -93,3 +93,51 @@ export const getCountUrlsFromUser = async (userID:number) => {
     }
 }
 
+export const getVisitsFromUrl = async (shortUrl: string) => {
+    try {
+        const res = await db.select().from(ShortenedUrl).where(
+            like(ShortenedUrl.shortUrl, shortUrl)
+        )
+
+        if (res.length === 0) {
+            return {
+                success: true,
+                data: null
+            }
+        }
+
+        return {
+            success: true,
+            data: res[0].visits
+        }
+    } catch (e) {
+        const error = e as Error
+        return {
+            success: false,
+            error: error.message
+        }
+    }
+}
+
+export const getAllVisitsFromUser = async (userID: number) => {
+    try {
+        const res = await db.select({
+            shortUrl: ShortenedUrl.shortUrl,
+            visits: ShortenedUrl.visits
+        }).from(ShortenedUrl).where(
+            eq(ShortenedUrl.userID, userID)
+        )
+
+
+        return {
+            success: true,
+            data: res
+        }
+    } catch (e) {
+        const error = e as Error
+        return {
+            success: false,
+            error: error.message
+        }
+    }
+}

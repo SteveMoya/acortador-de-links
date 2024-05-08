@@ -7,14 +7,32 @@ import { Auth, SignIn } from "auth-astro/components";
 import { Icon } from "astro-icon/components";
 import { ShorterUrl } from "@components/ShorterUrl";
 import { getUserByEmail } from "@utils/db.ts";
+import { User, db } from "astro:db";
 
 const session: Session | null = await getSession(Astro.request);
 
 let userID: number | undefined;
 if (session && session.user?.email) {
 	const res = await getUserByEmail(session.user.email);
+
 	if (res.success && res.data) {
 		userID = res.data.id;
+	}
+}
+if (
+	session &&
+	session.user?.email &&
+	session.user?.name &&
+	session.user?.image
+) {
+	const res = await getUserByEmail(session.user.email);
+
+	if (res.success && !res.data) {
+		await db.insert(User).values({
+			name: session.user.name,
+			email: session.user.email,
+			userimage: session.user.image,
+		});
 	}
 }
 ---
@@ -23,41 +41,39 @@ if (session && session.user?.email) {
 	title="Acortador de Link"
 	description="Esta Aplicacion trata de solucionar el problema de las url super largas acortandolas"
 >
-
 	<!-- Main Content -->
-		{
-			session ? (
-				<>
-					<Section
-						title="Bienvenido"
-						body={`Hola ${session.user?.name}!`}
-					/>
-					<ShorterUrl userID={userID} client:load />
-				</>
-			) : (
+	{
+		session ? (
+			<>
 				<Section
 					title="Bienvenido"
-					body="Por favor!, inicia sesion para poder acortar tus links"
-				>
-					<div class="my-4 ">
-						<Auth>
-							<SignIn
-								class="bg-slate-100 p-2 rounded-full  text-slate-800 hover:text-[#333] "
-								provider="github"
-							>
-								<Icon name="mdi:github" class="h-6 w-auto" />
-							</SignIn>
-							<SignIn
-								class="bg-slate-100 p-2 rounded-full text-slate-800 hover:text-[#db4437]"
-								provider="google"
-							>
-								<Icon name="mdi:google" class="h-6 w-auto" />
-							</SignIn>
-						</Auth>
-					</div>
-				</Section>
-			)
-		}
+					body={`Hola ${session.user?.name}!`}
+				/>
+				<ShorterUrl userID={userID} client:load />
+			</>
+		) : (
+			<Section
+				title="Bienvenido"
+				body="Por favor!, inicia sesion para poder acortar tus links"
+			>
+				<div class="my-4 ">
+					<Auth>
+						<SignIn
+							class="bg-slate-100 p-2 rounded-full  text-slate-800 hover:text-[#333] "
+							provider="github"
+						>
+							<Icon name="mdi:github" class="h-6 w-auto" />
+						</SignIn>
+						<SignIn
+							class="bg-slate-100 p-2 rounded-full text-slate-800 hover:text-[#db4437]"
+							provider="google"
+						>
+							<Icon name="mdi:google" class="h-6 w-auto" />
+						</SignIn>
+					</Auth>
+				</div>
+			</Section>
+		)
+	}
 	<!-- End Main Content -->
-	
 </Layout>
