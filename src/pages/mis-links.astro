@@ -14,6 +14,7 @@ if (!session) {
 let urls: {
     url: string;
     shortUrl: string;
+    name: string;
 }[] = [];
 
 if (session && session.user?.email) {
@@ -21,7 +22,6 @@ if (session && session.user?.email) {
 
     if (user.success && user.data) {
         const urlsRes = await getUrlsFromUser(user.data?.id);
-
         if (urlsRes.success && urlsRes.data) {
             urls = urlsRes.data.map((url) => url);
         }
@@ -42,6 +42,7 @@ if (session && session.user?.email) {
             {
                 urls.map((url) => (
                     <li class="py-2 border my-2 rounded-sm p-4 h-auto max-w-full flex flex-col gap-4 ">
+                        <h3>{url.name}</h3>
                         <span>{url.url}</span>
                         <button
                             value={url.shortUrl}
@@ -57,7 +58,7 @@ if (session && session.user?.email) {
                 ))
             }
         </ul>
-    </S>
+    </Section>
 
     <!-- End Main Content -->
 </Layout>

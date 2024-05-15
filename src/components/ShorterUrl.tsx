@@ -5,6 +5,8 @@ export const ShorterUrl = ({ userID }:
     { userID?: number }
 ) => {
     const [url, setUrl] = useState<string>()
+    const [nameURL, setNameURL] = useState<string>()
+    
     const [error, setError] = useState<string>()
     const shortenedUrlRef = useRef<HTMLInputElement>(null)
 
@@ -29,7 +31,7 @@ export const ShorterUrl = ({ userID }:
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url, userID }),
+                body: JSON.stringify({ url, userID, nameURL }),
             });
             const data = await res.json();
             const shortUrldata = data.shortUrl;
@@ -52,6 +54,7 @@ export const ShorterUrl = ({ userID }:
         }
         finally {
             setUrl('');
+            setNameURL('');
         }
     }
     const handleCopy = async () => {
@@ -69,6 +72,13 @@ export const ShorterUrl = ({ userID }:
     return (
         <>
             <form onSubmit={handleSubmit} className="flex flex-col max-w-screen-md my-10 mx-auto gap-4">
+                <label className="flex flex-col"> <h3 className="text-3xl ">Nombre Personalizado de la URL</h3>
+                    <input type="text"
+                        placeholder="Link de Youtube, Facebook, etc."
+                        className=" p-2 border border-gray-300 rounded-lg text-black"
+                        value={nameURL} onChange={(e) => setNameURL(e.target.value)}
+                    />
+                </label>
                 <label className="flex flex-col"> <h3 className="text-3xl ">URL a Acortar</h3>
                     <input type="url" required
                         placeholder="Escribe la Link que quieres Acortar"

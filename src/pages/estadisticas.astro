@@ -4,7 +4,7 @@ import Section from "@components/Section.astro";
 import type { Session } from "@auth/core/types";
 import { getSession } from "auth-astro/server";
 import { Icon } from "astro-icon/components";
-import { getUserByEmail, getCountUrlsFromUser, getAllVisitsFromUser } from "@utils/db.ts";
+import { getCountUrlsFromUser, getUserByEmail, } from "@utils/db.ts";
 
 const session: Session | null = await getSession(Astro.request);
 if (!session) {

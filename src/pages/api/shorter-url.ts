@@ -37,7 +37,6 @@ export const POST: APIRoute = async ({ request }) => {
             }
         })
     }
-    const url = body.url as string
 
     try {
         let idExists = true
@@ -58,9 +57,10 @@ export const POST: APIRoute = async ({ request }) => {
                 // guardar en la base de datos
                 await db.insert(ShortenedUrl).values({
                     userID: body.userID,
+                    url: body.url,
                     shortUrl: id,
-                    url: url,
-                    visits: 0
+                    createdate: new Date(),
+                    name: body.nameURL,
                 })
             }
         } while (idExists)
