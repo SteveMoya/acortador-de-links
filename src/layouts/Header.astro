@@ -1,9 +1,8 @@
 ---
 import { Icon } from "astro-icon/components";
 import { Picture } from "astro:assets";
-import { SignOut } from "auth-astro/components";
 
-const { session } = Astro.props;
+const user = Astro.locals.user;
 
 const NavItems = [
     {
@@ -29,44 +28,45 @@ const NavItems = [
 
 <!-- NavBar -->
 <header>
-        {
-            session && (
-                <nav class="flex justify-between items-center mt-4 mx-4">
-                    {NavItems.map((item) => (
-                     <a href={item.href} class={item.class}>
+    {
+        user && (
+            <nav class="flex justify-between items-center mt-4 mx-4">
+                {NavItems.map((item) => (
+                    <a href={item.href} class={item.class}>
                         <Icon name={item.icon} class="inline-block mb-1" />
                         {item.name}
                     </a>
-                    )    
-                    )}
+                ))}
 
-                    <div>
-                        <div class="flex items-center w-[100px] cursor-pointer gap-2 my-4 relative group mix-w-[100px]">
-                            <div>
-                                <Picture
-                                    class="w-8 h-8 rounded-full"
-                                    src={session.user?.image || ""}
-                                    alt={
-                                        session.user?.name ||
-                                        "Error a cargar la imagen"
-                                    }
-                                    inferSize
-                                />
-                            </div>
-                            <Icon name="line-md:chevron-down" />
-                            <div class="absolute hidden top-[110%] right-3 group-hover:flex group-focus:flex flex-col bg-slate-800 p-2 rounded-md gap-2 mx-10 w-max">
-                                <span class="text-sm font-semibold ">
-                                    {session.user?.name?.slice(0, 10)}
-                                </span>
-                                <hr />
-                                <SignOut class="text-sm font-semibold">
-                                    Cerrar Sesion
-                                </SignOut>
-                            </div>
+                <div>
+                    <div class="flex items-center w-[100px] cursor-pointer gap-2 my-4 relative group mix-w-[100px]">
+                        <div>
+                            <Picture
+                                class="w-8 h-8 rounded-full"
+                                src={user.userimage || ""}
+                                alt={
+                                    user.username || "Error a cargar la imagen"
+                                }
+                                inferSize
+                            />
+                        </div>
+                        <Icon name="line-md:chevron-down" />
+                        <div class="absolute hidden top-[110%] right-3 group-hover:flex group-focus:flex flex-col bg-slate-800 p-2 rounded-md gap-2 mx-10 w-max">
+                            <span class="text-sm font-semibold ">
+                                {user.username.slice(0, 10)}
+                            </span>
+                            <hr />
+                            <a
+                                href="/api/auth/singout"
+                                class="text-sm font-semibold"
+                            >
+                                Cerrar Sesion
+                            </a>
                         </div>
                     </div>
-                </nav>
-            )
-        }
+                </div>
+            </nav>
+        )
+    }
 </header>
 <!--End NavBar -->

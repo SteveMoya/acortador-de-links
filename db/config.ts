@@ -2,22 +2,31 @@ import { column, defineDb, defineTable } from 'astro:db';
 
 const User = defineTable({
   columns: {
-    id: column.number({primaryKey: true, unique: true, autoIncrement: true,}),
+    id: column.text({primaryKey: true, unique: true}),
     email: column.text({unique: true}),
-    name: column.text(),
+    username: column.text(),
     userimage: column.text(),
-  
+    providerID: column.text(),
   }
 })
 
+const Session = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true, optional: false, unique: true }),
+    userId: column.text({ optional: false, references: () => User.columns.id }),
+    createdAt: column.date({ optional: false, default: new Date() }),
+    expiresAt: column.number({ optional: false }),
+  },
+});
+
 const ShortenedUrl = defineTable({
   columns: {
-    userID: column.number({
+    userID: column.text({
       references: () => User.columns.id}),
     url: column.text(),
     shortUrl: column.text({unique: true, primaryKey: true}),
-    createdate: column.date(),
-    name: column.text({default: 'No name'}),
+    createDate: column.date(),
+    nameURL: column.text({default: 'No name'}),
   }
 })
 
@@ -36,5 +45,6 @@ export default defineDb({
     User,
     ShortenedUrl,
     Analytics,
+    Session,
   }
 });

@@ -1,32 +1,28 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Section from "@components/Section.astro";
-import type { Session } from "@auth/core/types";
-import { getSession } from "auth-astro/server";
 import { Icon } from "astro-icon/components";
 import { getUserByEmail, getUrlsFromUser } from "@utils/db.ts";
 
-const session: Session | null = await getSession(Astro.request);
-if (!session) {
-    return Astro.redirect("/");
-}
 
-let urls: {
-    url: string;
-    shortUrl: string;
-    name: string;
-}[] = [];
+const user = Astro.locals.user;
+const urls = [
+{
+    
+    name: "URL 1",
+    url: "https://www.google.com",
+    shortUrl: "shortUrl",
+},
+{
+    name: "URL 2",
+    url: "https://www.google.com",
+    shortUrl: "shortUrl",
+},
 
-if (session && session.user?.email) {
-    const user = await getUserByEmail(session.user.email);
 
-    if (user.success && user.data) {
-        const urlsRes = await getUrlsFromUser(user.data?.id);
-        if (urlsRes.success && urlsRes.data) {
-            urls = urlsRes.data.map((url) => url);
-        }
-    }
-}
+]
+
+
 ---
 
 <Layout
@@ -35,8 +31,8 @@ if (session && session.user?.email) {
 >
     <!-- Main Content -->
     <Section
-        title={`URLs acortadas de ${session.user?.name?.split(" ")[0]}`}
-        body={`Hola ${session.user?.name}!`}
+        title={`URLs acortadas de ${"Nombre de Usuario"}`}
+        body={`Hola ${"Nombre de Usuario"}!`}
     >
         <ul class="grid grid-cols-2 md:grid-cols-3 gap-4 px-6">
             {

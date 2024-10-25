@@ -59,8 +59,8 @@ export const POST: APIRoute = async ({ request }) => {
                     userID: body.userID,
                     url: body.url,
                     shortUrl: id,
-                    createdate: new Date(),
-                    name: body.nameURL,
+                    createDate: new Date(),
+                    nameURL: body.nameURL,
                 })
             }
         } while (idExists)

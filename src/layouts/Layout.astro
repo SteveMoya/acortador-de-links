@@ -1,8 +1,6 @@
 ---
 import { Toaster } from "sonner";
 import Header from "./Header.astro";
-import { getSession } from "auth-astro/server";
-import type { Session } from "@auth/core/types";
 import Footer from "./Footer.astro";
 
 interface Props {
@@ -10,7 +8,7 @@ interface Props {
 	description: string;
 }
 const { title, description } = Astro.props;
-const session: Session | null = await getSession(Astro.request);
+const user = Astro.locals.user;
 ---
 
 <!doctype html>
@@ -26,7 +24,7 @@ const session: Session | null = await getSession(Astro.request);
 	<body
 		class="text-center text-white font-sans antialiased bg-gradient-to-br from-[#13151a] to-[#1e1f26] min-h-screen"
 	>
-		<Header session={session} />
+		<Header  />
 		<main class="my-10 mx-auto max-w-screen-xl">
 			<h1 class="text-4xl mb-4">{title}</h1>
 			<slot />
