@@ -3,8 +3,7 @@ import Layout from "@layouts/Layout.astro";
 import Section from "@components/Section.astro";
 import { Icon } from "astro-icon/components";
 import { ShorterUrl } from "@components/ShorterUrl";
-import { getUserByEmail } from "@utils/db.ts";
-import { User, db } from "astro:db";
+
 
 const user = Astro.locals.user 
 ---
@@ -17,8 +16,8 @@ const user = Astro.locals.user
 	{
 		user ? (
 			<>
-				<Section title="Bienvenido" body={`Hola ${"Usuario "}`} />
-				<ShorterUrl userID={4516} client:load />
+				<Section title="Bienvenido" body={`Hola ${user.username}`} />
+				<ShorterUrl userID={user.id} client:load />
 			</>
 		) : (
 			<Section

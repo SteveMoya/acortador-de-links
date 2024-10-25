@@ -2,7 +2,7 @@ import { validarURL } from "@src/utils/utils"
 import { useRef, useState } from "react"
 import { toast } from "sonner"
 export const ShorterUrl = ({ userID }:
-    { userID?: number }
+    { userID?: string }
 ) => {
     const [url, setUrl] = useState<string>()
     const [nameURL, setNameURL] = useState<string>()

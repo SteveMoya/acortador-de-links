@@ -1,4 +1,4 @@
-import { ShortenedUrl, User, db, eq, like, Analytics } from "astro:db"
+import { ShortenedUrl, User, db, eq, like, Analytics, } from "astro:db"
 
 export const getUserByEmail = async (email: string) => {
     try {

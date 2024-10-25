@@ -2,13 +2,11 @@
 import Layout from "@layouts/Layout.astro";
 import Section from "@components/Section.astro";
 import { Icon } from "astro-icon/components";
-import { getUserByEmail, getUrlsFromUser } from "@utils/db.ts";
 
 
 const user = Astro.locals.user;
 const urls = [
 {
-    
     name: "URL 1",
     url: "https://www.google.com",
     shortUrl: "shortUrl",
@@ -18,8 +16,6 @@ const urls = [
     url: "https://www.google.com",
     shortUrl: "shortUrl",
 },
-
-
 ]
 
 
@@ -31,8 +27,8 @@ const urls = [
 >
     <!-- Main Content -->
     <Section
-        title={`URLs acortadas de ${"Nombre de Usuario"}`}
-        body={`Hola ${"Nombre de Usuario"}!`}
+        title={`URLs acortadas de ${user.username}`}
+        body={`Hola ${user.username}!`}
     >
         <ul class="grid grid-cols-2 md:grid-cols-3 gap-4 px-6">
             {
