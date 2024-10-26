@@ -4,9 +4,10 @@ const User = defineTable({
   columns: {
     id: column.text({primaryKey: true, unique: true}),
     email: column.text({unique: true}),
-    username: column.text(),
+    username: column.text({ optional: false }),
     userimage: column.text(),
-    providerID: column.text(),
+    providerID: column.text({ optional: false }),
+    createdAt: column.date({ optional: false, default: new Date() }),
   }
 })
 
@@ -25,7 +26,7 @@ const ShortenedUrl = defineTable({
       references: () => User.columns.id}),
     url: column.text(),
     shortUrl: column.text({unique: true, primaryKey: true}),
-    createDate: column.date(),
+    createDate: column.date({ optional: false }),
     nameURL: column.text({default: 'No name'}),
   }
 })

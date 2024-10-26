@@ -1,0 +1,63 @@
+---
+import { APP_URL } from "@/const";
+import { getAnalytics, getShortUrl, formatDate } from "@/utils";
+import Layout from "@layouts/Layout.astro";
+import Section from "@components/Section.astro";
+
+const user = Astro.locals.user;
+
+const { shorturl } = Astro.params;
+if (!shorturl) {
+    return new Response({
+        status: 404,
+        body: "No se encontro la URL",
+    });
+}
+
+const analitycs = await getAnalytics(shorturl);
+if (!analitycs.success) {
+    return new Response({
+        status: 404,
+        body: "No se encontraron metricas para este link",
+    });
+}
+const shortUrlData = await getShortUrl(shorturl);
+console.log("Datos de la URL", shortUrlData);
+if (!shortUrlData.success) {
+    return new Response({
+        status: 404,
+        body: "No se encontraron metricas para este link",
+    });
+}
+---
+
+<Layout
+    title={`Esta es la URL: ${shortUrlData.data?.nameURL}`}
+    description={`Aqui podras ver las metricas de la URL: ${shortUrlData.data?.nameURL}`}
+>
+    <Section title="Estadisticas de Link">
+        <div
+            class="border my-2 rounded-lg bg-slate-800 px-4 py-6 h-auto flex flex-col gap-4 shadow-2xl max-w-6xl mx-auto"
+        >
+            <h2 class="text-2xl">Estas son las metricas:</h2>
+            <ul class="">
+                <li>
+                    Visitas totales: {
+                        analitycs.data?.visits || "Todavia no existen visitas"
+                    }
+                </li>
+                <li>
+                    Fecha de creacion: {
+                        formatDate(shortUrlData.data?.createDate)
+                    }
+                </li>
+                <li>
+                    URL Original: {shortUrlData.data?.url}
+                </li>
+                <li>
+                    URL Acortada: {APP_URL + shortUrlData.data?.shortUrl}
+                </li>
+            </ul>
+        </div>
+    </Section>
+</Layout>

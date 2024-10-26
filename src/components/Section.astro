@@ -3,14 +3,14 @@ import { Icon } from "astro-icon/components";
 
 interface Props {
 	title: string;
-	body: string;
+	body?: string;
 }
 
 const { title, body } = Astro.props;
 ---
 
 <section
-	class="flex flex-col shadow-lg rounded-lg bg-gradient-to-t from-[#202b7e] to-[#1D2C4C]"
+	class="flex flex-col shadow-lg rounded-lg bg-gradient-to-t from-[#202b7e] to-[#1D2C4C] p-4 my-4 max-w-6xl mx-auto"
 >
 		<h2
 			class="text-xl my-4"

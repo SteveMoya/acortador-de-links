@@ -1,8 +1,10 @@
-import type { APIRoute } from "astro";
-import { getLinkUrl } from "@utils/db";
-export const GET: APIRoute = async ({ params, redirect }) => {
-  const { shorturl } = params
+import type { APIContext } from "astro";
 
+import { getLinkUrl } from "@utils/db";
+export const GET = async ( context: APIContext): Promise<Response> => {
+  const { shorturl } = context.params
+  const request = context.request
+  console.log("Esto es lo que trae la peticion",request)
   if (!shorturl) {
     return new Response(null, {
       status: 400
@@ -30,5 +32,5 @@ export const GET: APIRoute = async ({ params, redirect }) => {
   }
 
 
-  return redirect(url.data)
+  return context.redirect(url.data)
 }

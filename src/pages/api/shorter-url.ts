@@ -1,9 +1,11 @@
 import type { APIRoute } from "astro"
 import { eq } from "astro:db"
 import { ShortenedUrl, db } from "astro:db"
+import type { APIContext } from "astro";
 
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async (context: APIContext): Promise<Response> => {
+    const request = context.request
     if (request.method !== "POST") {
         return new Response(JSON.stringify({ error: "Método no permitido" }), {
             status: 405,

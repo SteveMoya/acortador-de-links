@@ -16,8 +16,9 @@ const user = Astro.locals.user
 	{
 		user ? (
 			<>
-				<Section title="Bienvenido" body={`Hola ${user.username}`} />
+				<Section title={`Bienvenido ${user.username}`} body={`Hola, aqui puedes comenzar a acortar tus links ${user.username}`} >
 				<ShorterUrl userID={user.id} client:load />
+			</Section>
 			</>
 		) : (
 			<Section

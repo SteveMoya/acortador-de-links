@@ -44,7 +44,7 @@ export const authMiddleware = defineMiddleware(async (context, next) => {
   }
   const sessionId = context.cookies.get(lucia.sessionCookieName)?.value ?? null;
   
-  if (["/estadisticas", "/mis-links"].some(path => context.url.pathname.startsWith(path))) {
+  if (["/estadisticas", "/mis-links", "/metricas/*"].some(path => context.url.pathname.startsWith(path))) {
     if (!sessionId) {
       return context.redirect("/");
     }

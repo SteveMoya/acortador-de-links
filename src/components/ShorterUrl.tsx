@@ -1,4 +1,4 @@
-import { validarURL } from "@src/utils/utils"
+import { validarURL, validateURLName } from "@src/utils/utils"
 import { useRef, useState } from "react"
 import { toast } from "sonner"
 export const ShorterUrl = ({ userID }:
@@ -18,6 +18,11 @@ export const ShorterUrl = ({ userID }:
             setError('Debes escribir una URL')
             toast.error('Debes escribir una URL')
             return
+        }
+        if (!nameURL || !validateURLName(nameURL)) {
+            setError('El nombre de la URL debe tener entre 1 y 20 caracteres')
+            toast.error('El nombre de la URL debe tener entre 1 y 20 caracteres')
+            return 
         }
 
         if (!validarURL(url)) {
@@ -91,14 +96,14 @@ export const ShorterUrl = ({ userID }:
                 <label className="flex flex-col"> <h3 className="text-3xl ">URL Acortada</h3>
                     <input type="url" ref={shortenedUrlRef} readOnly
                         disabled
-                        className=" p-2 border border-gray-300 rounded-lg text-black"
+                        className=" p-2 border mt-4 border-gray-300 rounded-lg  text-white/90 text-center"
                     />
                 </label>
             </form>
-            <div className="flex flex-col max-w-screen-md mx-auto">
+            <div className="flex flex-col  max-w-screen-md mx-auto">
                 {shortenedUrlRef.current?.value && (
                     <>
-                        <button onClick={handleCopy} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Copiar</button>
+                        <button onClick={handleCopy} className="bg-blue-500 text-white px-4 py-2 rounded-lg ">Copiar</button>
                         <a
                             href={shortenedUrlRef.current.value}
                             target="_blank"

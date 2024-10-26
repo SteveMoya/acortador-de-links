@@ -2,28 +2,45 @@
 import Layout from "@layouts/Layout.astro";
 import Section from "@components/Section.astro";
 import { Icon } from "astro-icon/components";
-
+import { ShortenedUrl, db, Analytics } from "astro:db";
+import { getCountUrlsFromUser, getTotalsVisits } from "@/utils";
 const user = Astro.locals.user;
-if (!user) {
-    return Astro.redirect("/");
+
+const analytics = await db.select().from(Analytics).all();
+
+const totalVisits = await getTotalsVisits(user.id);
+if (!totalVisits.success) {
+    return new Response({
+        status: 400,
+        body: "No se encontraron metricas para este link",
+    });
 }
-let countUrls = 0;
+console.log("ESTAS SON LAS VISITAS TOTALES", totalVisits.data);
+
+const countUrls = await getCountUrlsFromUser(user.id);
+
+if (!countUrls.success) {
+    return new Response({
+        status: 400,
+        body: "No se encontraron metricas para este link",
+    });
+}
 ---
 
 <Layout
-    title="Mis Links"
+    title="Estadisticas de Links"
     description="Aqui podras ver tus links acortados anteriormente."
 >
     <!-- Main Content -->
     <Section
-        title={`URLs acortadas de ${user.username}`}
-        body={`Hola ${user.username}!`}
+        title="Estadisticas de Links"
+        body={`Hola ${user?.username || "No NAME"}!`}
     >
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            <div class="rounded-lg w-44 bg-slate-700 p-8 mx-auto my-10">
+        <div class="flex flex-wrap content-center justify-center gap-6">
+            <div class="rounded-lg w-44 bg-slate-700 p-8">
                 <Icon name="line-md:speedometer" class="text-3xl mx-auto" />
                 <div class="my-2">
-                    <h2 class="text-4xl font-bold">{countUrls}</h2>
+                    <h2 class="text-4xl font-bold">{countUrls.data}</h2>
                 </div>
 
                 <div>
@@ -32,12 +49,11 @@ let countUrls = 0;
                     </p>
                 </div>
             </div>
-            <div class="rounded-lg w-44 bg-slate-700 p-8 mx-auto my-10">
+            <div class="rounded-lg w-44 bg-slate-700 p-8">
                 <Icon name="line-md:speedometer" class="text-3xl mx-auto" />
                 <div class="my-2">
-                    <h2 class="text-4xl font-bold">{}</h2>
+                    <h2 class="text-4xl font-bold">{totalVisits.data}</h2>
                 </div>
-
                 <div>
                     <p class="mt-2 font-sans text-base font-medium">
                         Cantidad de Visitas Totales a tus Links
@@ -46,5 +62,4 @@ let countUrls = 0;
             </div>
         </div>
     </Section>
-
 </Layout>
